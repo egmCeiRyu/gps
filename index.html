@@ -61,16 +61,14 @@ Aponte a câmera para o Kanji
 
   <a-camera position="0 0 0"></a-camera>
 
-  <!-- marcador -->
-  <a-entity id="target" mindar-image-target="targetIndex: 0">
-  </a-entity>
+  <a-light type="ambient" intensity="2"></a-light>
 
-  <a-entity
-      id="persistentObject"
-      visible="false">
+  <a-entity id="target" mindar-image-target="targetIndex: 0">
 
       <a-box
+          id="cube"
           color="red"
+          position="0 0.5 0"
           width="0.5"
           height="0.5"
           depth="0.5">
@@ -79,33 +77,6 @@ Aponte a câmera para o Kanji
   </a-entity>
 
 </a-scene>
-
-<script>
-
-const scene = document.querySelector("a-scene");
-const target = document.getElementById("target");
-const object = document.getElementById("persistentObject");
-
-let placed = false;
-
-target.addEventListener("targetFound", () => {
-
-    if (placed) return;
-
-    object.setAttribute("visible", true);
-
-    object.object3D.position.set(
-        0,
-        0.5,
-        -1
-    );
-
-    placed = true;
-
-    console.log("Objeto fixado");
-});
-
-</script>
 
 </body>
 </html>
