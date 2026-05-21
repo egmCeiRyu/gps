@@ -2,17 +2,29 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Image Target + SLAM Persistente</title>
   
-  <script src="./external/scripts/8frame-1.5.0.min.js"></script>
+  <script crossorigin="anonymous" src="./external/scripts/8frame-1.5.0.min.js"></script>
   
-  <script src="./bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" crossorigin="anonymous" async data-preload-chunks="slam,image"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+    /* Oculta as marcas d'água igual no seu código */
+    div[data-8thwall-branding], .xrextras-branding { display: none !important; }
+  </style>
 </head>
 <body>
 
   <a-scene 
-  xrweb="local-tracking: true; disableWorldTracking: false;"
-  loading-screen="enabled: false">
+    landing-page
+    xrextras-loading
+    xrextras-runtime-error
+    renderer="colorManagement: true; antialias: true"
+    xrweb="local-tracking: true;">
     
     <a-assets>
       <a-asset-item id="modelo" src="./public/assets/modelo.glb"></a-asset-item>
@@ -21,8 +33,6 @@
     <a-camera position="0 1.6 0"></a-camera>
 
     <a-named-image-target name="seu-panfleto.json" alvo-persistente>
-      
-      <a-box position="0 0.5 0" material="color: red;" scale="0.2 0.2 0.2"></a-box>
       
       <a-entity 
         gltf-model="#modelo" 
@@ -34,6 +44,8 @@
     </a-named-image-target>
 
   </a-scene>
+
+  <script src="./bundle.js"></script>
 
 </body>
 </html>
