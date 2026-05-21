@@ -10,7 +10,9 @@
 </head>
 <body>
 
-  <a-scene xrweb="local-tracking: true;">
+  <a-scene 
+  xrweb="local-tracking: true; disableWorldTracking: false;"
+  loading-screen="enabled: false">
     
     <a-assets>
       <a-asset-item id="modelo" src="./public/assets/modelo.glb"></a-asset-item>
