@@ -16,20 +16,18 @@ AFRAME.registerComponent('alvo-persistente', {
   }
 });
 
-// 🚀 ADICIONE ESTE BLOCO LOGO ABAIXO PARA FORÇAR O MOTOR A ESCANEAR A IMAGEM
 const onxrloaded = () => {
-  // Configura o controlador injetando os caminhos corretos dos arquivos locais
   XR8.XrController.configure({
     imageTargetData: [
       {
-        name: 'seu-panfleto', // Deve bater com o name da tag <a-named-image-target>
-        imagePath: './image-targets/seu-panfleto_original.png', 
-        metadata: './image-targets/seu-panfleto.json' // Mantenha o arquivo com .json na pasta!
+        name: 'seu-panfleto', 
+        // IMPORTANTE: Deixe sem o ponto-barra (./) no início para o GitHub Pages achar direto na raiz do repositório!
+        imagePath: 'image-targets/seu-panfleto_original.png', 
+        metadata: 'image-targets/seu-panfleto.json'
       }
     ]
   })
-  console.log("🎯 Dados do Kanji injetados! Pronto para escanear.");
+  console.log("🎯 Dados do Kanji injetados com sucesso!");
 }
 
-// Acorda o motor do 8th Wall
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);

@@ -32,15 +32,17 @@
 
     <a-camera position="0 1.6 0"></a-camera>
 
-    <a-named-image-target name="seu-panfleto">
-   
-   <a-entity 
-     id="targetModel"
-     gltf-model="#cactusModel" 
-     scale="1 1 1" 
-     position="0 0 0"
-     visible="false">
-   </a-entity>
+    <a-named-image-target name="seu-panfleto" alvo-persistente>
+      
+      <a-entity 
+        id="targetModel"
+        gltf-model="#cactusModel" 
+        scale="1 1 1" 
+        position="0 0 0"
+        visible="false">
+      </a-entity>
+
+    </a-named-image-target>
 
   </a-scene>
 
