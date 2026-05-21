@@ -2,21 +2,21 @@
   "type": "PLANAR",
   "properties": {
     "top": 0,
-    "left": 150,
-    "width": 900,
+    "left": 0,
+    "width": 1200,
     "height": 1200,
     "isRotated": false,
     "originalWidth": 1200,
     "originalHeight": 1200
   },
-  "imagePath": "image-targets/seu-panfleto_luminance.jpg",
+  "imagePath": "image-targets/seu-panfleto_original.jpg",
   "metadata": null,
   "name": "seu-panfleto",
   "resources": {
     "originalImage": "seu-panfleto_original.jpg",
-    "croppedImage": "seu-panfleto_cropped.jpg",
-    "thumbnailImage": "seu-panfleto_thumbnail.jpg",
-    "luminanceImage": "seu-panfleto_luminance.jpg"
+    "croppedImage": "seu-panfleto_original.jpg",
+    "thumbnailImage": "seu-panfleto_original.jpg",
+    "luminanceImage": "seu-panfleto_original.jpg"
   },
   "created": 1779364170640,
   "updated": 1779364170640
