@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AR Sky Object</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <!-- AR.js com suporte a GPS e DeviceOrientation -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; font-family: sans-serif; }
+
+    #ui-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 999;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    #status-bar {
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+
+    #distance-bar {
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(4px);
+      display: none;
+    }
+
+    #compass-hint {
+      background: rgba(30, 158, 117, 0.85);
+      color: #fff;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    #btn-photo {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #btn-photo::after {
+      content: '';
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: #fff;
+      display: block;
+    }
+
+    #flash {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.05s;
+    }
+
+    #debug {
+      position: absolute;
+      bottom: 130px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 12px;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="ui-overlay">
+    <div id="status-bar">Aguardando GPS...</div>
+    <div id="distance-bar"></div>
+    <div id="compass-hint">Aponte a câmera para o céu sobre o local</div>
+  </div>
+
+  <div id="btn-photo" onclick="takePhoto()"></div>
+  <div id="flash"></div>
+  <div id="debug"></div>
+
+  <a-scene
+    vr-mode-ui="enabled: false"
+    arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+    embedded
+    renderer="logarithmicDepthBuffer: true; colorManagement: true;"
+  >
+
+    <!-- ============================================================
+         CONFIGURE AQUI:
+         Coloque as coordenadas GPS do seu estabelecimento
+         e ajuste o objeto 3D que quer mostrar no céu
+    ============================================================ -->
+
+    <!-- Objeto no céu: muda latitude/longitude para o seu local -->
+    <!-- O "altitude" no gps-entity-place não é suportado diretamente,
+         então usamos position="0 HEIGHT 0" para elevar o objeto -->
+
+    <a-entity id="sky-object"
+      gps-entity-place="latitude: SEU_LATITUDE; longitude: SEU_LONGITUDE;"
+      look-at="[gps-camera]"
+    >
+      <!-- Objeto principal: troque pelo seu modelo ou forma -->
+      <!-- Exemplo: estrela / logo flutuando no céu -->
+      <a-entity position="0 80 0">
+
+        <!-- Anel externo -->
+        <a-torus
+          color="#7F77DD"
+          radius="12"
+          radius-tubular="1.5"
+          rotation="90 0 0"
+          animation="property: rotation; to: 90 360 0; dur: 4000; loop: true; easing: linear"
+        ></a-torus>
+
+        <!-- Esfera central -->
+        <a-sphere
+          color="#1D9E75"
+          radius="7"
+          animation="property: scale; to: 1.1 1.1 1.1; dur: 1500; loop: true; dir: alternate; easing: easeInOutSine"
+        ></a-sphere>
+
+        <!-- Texto acima do objeto — coloque o nome do seu negócio -->
+        <a-text
+          value="Seu Negócio"
+          align="center"
+          position="0 12 0"
+          scale="20 20 20"
+          color="white"
+        ></a-text>
+
+        <!-- Raio de luz saindo do objeto para o chão (indicador visual) -->
+        <a-cylinder
+          color="#7F77DD"
+          opacity="0.15"
+          radius="2"
+          height="80"
+          position="0 -40 0"
+        ></a-cylinder>
+
+      </a-entity>
+    </a-entity>
+
+    <!-- ============================================================ -->
+
+    <a-camera gps-camera rotation-reader id="camera"></a-camera>
+
+  </a-scene>
+
+  <script>
+    // ============================================================
+    // CONFIGURE AQUI — mude para as coordenadas do seu local
+    // ============================================================
+    const TARGET_LAT = -23.5505;   // latitude do seu estabelecimento
+    const TARGET_LNG = -46.6333;   // longitude do seu estabelecimento
+    const TARGET_NAME = "Seu Negócio"; // nome para exibir
+    // ============================================================
+
+    const statusBar = document.getElementById('status-bar');
+    const distanceBar = document.getElementById('distance-bar');
+    const compassHint = document.getElementById('compass-hint');
+    const btnPhoto = document.getElementById('btn-photo');
+    const debugEl = document.getElementById('debug');
+
+    let userLat = null;
+    let userLng = null;
+    let ready = false;
+
+    // Calcula distância em metros entre dois pontos GPS (fórmula Haversine)
+    function haversineDistance(lat1, lng1, lat2, lng2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 +
+                Math.cos(lat1 * Math.PI/180) *
+                Math.cos(lat2 * Math.PI/180) *
+                Math.sin(dLng/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    // Calcula direção (bearing) em graus de um ponto para outro
+    function bearing(lat1, lng1, lat2, lng2) {
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const y = Math.sin(dLng) * Math.cos(lat2 * Math.PI / 180);
+      const x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) -
+                Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLng);
+      return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    }
+
+    // Atualiza posição do usuário
+    function onPosition(pos) {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+
+      const dist = haversineDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
+      const dir = bearing(userLat, userLng, TARGET_LAT, TARGET_LNG);
+
+      const dirLabel = compassDirection(dir);
+
+      let distText = dist < 1000
+        ? `${Math.round(dist)}m`
+        : `${(dist/1000).toFixed(1)}km`;
+
+      statusBar.textContent = `GPS ativo · ${TARGET_NAME}`;
+      distanceBar.style.display = 'block';
+      distanceBar.textContent = `${distText} · Direção: ${dirLabel} (${Math.round(dir)}°)`;
+      compassHint.style.display = 'block';
+      btnPhoto.style.display = 'flex';
+      ready = true;
+
+      // Debug info
+      debugEl.style.display = 'block';
+      debugEl.textContent = `Você: ${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+    }
+
+    function compassDirection(deg) {
+      const dirs = ['N','NE','L','SE','S','SO','O','NO'];
+      return dirs[Math.round(deg / 45) % 8];
+    }
+
+    function onError(err) {
+      statusBar.textContent = 'GPS não disponível — verifique as permissões';
+    }
+
+    // Inicia rastreamento GPS contínuo
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(onPosition, onError, {
+        enableHighAccuracy: true,
+        maximumAge: 3000,
+        timeout: 10000
+      });
+    } else {
+      statusBar.textContent = 'GPS não suportado neste dispositivo';
+    }
+
+    // ============================================================
+    // Função de tirar foto (captura o canvas do A-Frame + câmera)
+    // ============================================================
+    function takePhoto() {
+      // Flash visual
+      const flash = document.getElementById('flash');
+      flash.style.opacity = '1';
+      setTimeout(() => flash.style.opacity = '0', 120);
+
+      // Captura o canvas do WebGL (A-Frame)
+      const scene = document.querySelector('a-scene');
+      const canvas = scene.canvas;
+
+      // Solicita ao A-Frame para preservar o buffer antes de capturar
+      scene.renderer.preserveDrawingBuffer = true;
+
+      setTimeout(() => {
+        try {
+          const dataURL = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.download = 'ar-photo.png';
+          link.href = dataURL;
+          link.click();
+          statusBar.textContent = 'Foto salva!';
+          setTimeout(() => statusBar.textContent = 'GPS ativo · ' + TARGET_NAME, 2000);
+        } catch(e) {
+          // Fallback: abre em nova aba para salvar manualmente
+          statusBar.textContent = 'Segure a tela para salvar a foto';
+        }
+      }, 200);
+    }
+  </script>
+
+</body>
+</html>
