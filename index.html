@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>AR Sky Object</title>
+  <title>AR Sky</title>
 
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
@@ -34,7 +34,7 @@
     }
 
     #hint {
-      background: rgba(31, 158, 117, 0.85);
+      background: rgba(15, 110, 86, 0.85);
       color: #fff;
       font-size: 13px;
       padding: 8px 16px;
@@ -42,6 +42,7 @@
       text-align: center;
     }
 
+    /* Botão de foto */
     #btn-photo {
       position: absolute;
       bottom: 44px;
@@ -69,6 +70,7 @@
     }
     #btn-photo:active { transform: translateX(-50%) scale(0.95); }
 
+    /* Seletor de forma */
     #shape-picker {
       position: absolute;
       bottom: 44px;
@@ -93,10 +95,11 @@
       backdrop-filter: blur(4px);
     }
     .shape-btn.active {
-      background: rgba(127,119,221,0.8);
+      background: rgba(127,119,221,0.85);
       border-color: #fff;
     }
 
+    /* Seletor de cor */
     #color-picker {
       position: absolute;
       bottom: 44px;
@@ -110,11 +113,16 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.6);
+      border: 3px solid rgba(255,255,255,0.5);
       cursor: pointer;
+      transition: transform .15s;
     }
-    .color-btn.active { border-color: #fff; transform: scale(1.15); }
+    .color-btn.active {
+      border-color: #fff;
+      transform: scale(1.18);
+    }
 
+    /* Flash de foto */
     #flash {
       position: absolute;
       inset: 0;
@@ -124,158 +132,81 @@
       pointer-events: none;
       transition: opacity 0.06s;
     }
-
-    #marker-ref {
-      position: absolute;
-      bottom: 130px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 999;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      font-size: 11px;
-      padding: 5px 12px;
-      border-radius: 12px;
-      text-align: center;
-      backdrop-filter: blur(4px);
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
 
   <div id="ui">
-    <div id="status">Point camera at the Hiro marker</div>
-    <div id="hint">Print the marker below — object appears above it</div>
+    <div id="status">Aponte a câmera para o marcador Kanji</div>
+    <div id="hint">Detectado! Aponte para o céu acima do marcador</div>
   </div>
 
+  <!-- Seletor de cor (esquerda) -->
   <div id="color-picker">
-    <div class="color-btn active" style="background:#7F77DD" onclick="setColor('#7F77DD', this)"></div>
-    <div class="color-btn" style="background:#1D9E75" onclick="setColor('#1D9E75', this)"></div>
-    <div class="color-btn" style="background:#D85A30" onclick="setColor('#D85A30', this)"></div>
-    <div class="color-btn" style="background:#EF9F27" onclick="setColor('#EF9F27', this)"></div>
-    <div class="color-btn" style="background:#fff" onclick="setColor('#ffffff', this)"></div>
+    <div class="color-btn active" style="background:#7F77DD" onclick="setColor('#7F77DD',this)"></div>
+    <div class="color-btn" style="background:#1D9E75" onclick="setColor('#1D9E75',this)"></div>
+    <div class="color-btn" style="background:#D85A30" onclick="setColor('#D85A30',this)"></div>
+    <div class="color-btn" style="background:#EF9F27" onclick="setColor('#EF9F27',this)"></div>
+    <div class="color-btn" style="background:#ffffff" onclick="setColor('#ffffff',this)"></div>
   </div>
 
+  <!-- Seletor de forma (direita) -->
   <div id="shape-picker">
-    <button class="shape-btn active" onclick="setShape('sphere', this)" title="Sphere">●</button>
-    <button class="shape-btn" onclick="setShape('box', this)" title="Box">■</button>
-    <button class="shape-btn" onclick="setShape('ring', this)" title="Ring">○</button>
+    <button class="shape-btn active" onclick="setShape('sphere',this)" title="Esfera">●</button>
+    <button class="shape-btn" onclick="setShape('box',this)" title="Cubo">■</button>
+    <button class="shape-btn" onclick="setShape('ring',this)" title="Anel">○</button>
   </div>
 
-  <div id="btn-photo" onclick="takePhoto()" title="Take photo"></div>
-  <div id="marker-ref">Marker: Hiro pattern · <a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png" style="color:#9FE1CB" target="_blank">tap to open & print</a></div>
+  <!-- Botão tirar foto -->
+  <div id="btn-photo" onclick="takePhoto()" title="Tirar foto"></div>
   <div id="flash"></div>
 
   <a-scene
     embedded
-    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    arjs="sourceType: webcam; debugUIEnabled: false;"
     vr-mode-ui="enabled: false"
     renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
   >
 
-    <a-marker preset="hiro" id="marker">
+    <!-- =====================================================
+         MARCADOR: Kanji (字) — imprima o arquivo kanji-marker.jpg
+         O objeto flutua ACIMA do marcador no céu.
+         Aumente SKY_HEIGHT no JavaScript para subir mais.
+    ===================================================== -->
+    <a-marker preset="kanji" id="marker">
 
-      <!-- ============================================================
-           Object floats HIGH above the marker so it appears in the sky.
-           position="0 HEIGHT 0" — increase Y to go higher.
-           At ~1m print distance: Y=3 = ~3m above marker in real world.
-           ============================================================ -->
-
-      <!-- SPHERE -->
-      <a-entity id="obj-sphere" position="0 5 0" visible="true">
-        <a-sphere
-          id="sphere"
-          radius="0.6"
-          color="#7F77DD"
+      <!-- ESFERA (visível por padrão) -->
+      <a-entity id="obj-sphere" position="0 6 0" visible="true">
+        <a-sphere id="sphere" radius="0.6" color="#7F77DD"
           animation="property: rotation; to: 0 360 0; dur: 3000; loop: true; easing: linear"
-          animation__pulse="property: scale; to: 1.15 1.15 1.15; dur: 1200; loop: true; dir: alternate; easing: easeInOutSine"
-        ></a-sphere>
-        <!-- Glow ring around sphere -->
-        <a-torus
-          color="#7F77DD"
-          opacity="0.35"
-          radius="0.9"
-          radius-tubular="0.04"
-          rotation="90 0 0"
-          animation="property: rotation; from: 90 0 0; to: 90 360 0; dur: 2500; loop: true; easing: linear"
-        ></a-torus>
-        <!-- Light beam down to marker -->
-        <a-cylinder
-          color="#7F77DD"
-          opacity="0.08"
-          radius="0.15"
-          height="5"
-          position="0 -2.5 0"
-        ></a-cylinder>
-        <!-- Floating label -->
-        <a-text
-          value="AR Sky"
-          align="center"
-          position="0 1.1 0"
-          scale="1.4 1.4 1.4"
-          color="white"
-          look-at="[camera]"
-        ></a-text>
+          animation__pulse="property: scale; to: 1.15 1.15 1.15; dur: 1200; loop: true; dir: alternate; easing: easeInOutSine">
+        </a-sphere>
+        <a-torus color="#7F77DD" opacity="0.3" radius="0.95" radius-tubular="0.04" rotation="90 0 0"
+          animation="property: rotation; from: 90 0 0; to: 90 360 0; dur: 2500; loop: true; easing: linear">
+        </a-torus>
+        <a-cylinder id="beam-sphere" color="#7F77DD" opacity="0.07" radius="0.12" height="6" position="0 -3 0"></a-cylinder>
+        <a-text id="label-sphere" value="AR Sky" align="center" position="0 1.2 0" scale="1.5 1.5 1.5" color="white" look-at="[camera]"></a-text>
       </a-entity>
 
-      <!-- BOX (hidden by default) -->
-      <a-entity id="obj-box" position="0 5 0" visible="false">
-        <a-box
-          id="box"
-          width="0.9" height="0.9" depth="0.9"
-          color="#7F77DD"
-          animation="property: rotation; to: 45 360 45; dur: 3500; loop: true; easing: linear"
-        ></a-box>
-        <a-cylinder
-          color="#7F77DD"
-          opacity="0.08"
-          radius="0.15"
-          height="5"
-          position="0 -2.5 0"
-        ></a-cylinder>
-        <a-text
-          value="AR Sky"
-          align="center"
-          position="0 1.1 0"
-          scale="1.4 1.4 1.4"
-          color="white"
-          look-at="[camera]"
-        ></a-text>
+      <!-- CUBO (oculto por padrão) -->
+      <a-entity id="obj-box" position="0 6 0" visible="false">
+        <a-box id="box" width="0.9" height="0.9" depth="0.9" color="#7F77DD"
+          animation="property: rotation; to: 45 360 45; dur: 3500; loop: true; easing: linear">
+        </a-box>
+        <a-cylinder id="beam-box" color="#7F77DD" opacity="0.07" radius="0.12" height="6" position="0 -3 0"></a-cylinder>
+        <a-text id="label-box" value="AR Sky" align="center" position="0 1.2 0" scale="1.5 1.5 1.5" color="white" look-at="[camera]"></a-text>
       </a-entity>
 
-      <!-- RING (hidden by default) -->
-      <a-entity id="obj-ring" position="0 5 0" visible="false">
-        <a-torus
-          id="ring"
-          color="#7F77DD"
-          radius="0.7"
-          radius-tubular="0.1"
-          animation="property: rotation; to: 360 360 0; dur: 3000; loop: true; easing: linear"
-        ></a-torus>
-        <!-- Inner ring -->
-        <a-torus
-          color="#7F77DD"
-          opacity="0.4"
-          radius="0.4"
-          radius-tubular="0.05"
-          animation="property: rotation; from: 0 0 0; to: -360 0 360; dur: 2000; loop: true; easing: linear"
-        ></a-torus>
-        <a-cylinder
-          color="#7F77DD"
-          opacity="0.08"
-          radius="0.15"
-          height="5"
-          position="0 -2.5 0"
-        ></a-cylinder>
-        <a-text
-          value="AR Sky"
-          align="center"
-          position="0 1.1 0"
-          scale="1.4 1.4 1.4"
-          color="white"
-          look-at="[camera]"
-        ></a-text>
+      <!-- ANEL (oculto por padrão) -->
+      <a-entity id="obj-ring" position="0 6 0" visible="false">
+        <a-torus id="ring" color="#7F77DD" radius="0.7" radius-tubular="0.12"
+          animation="property: rotation; to: 360 360 0; dur: 3000; loop: true; easing: linear">
+        </a-torus>
+        <a-torus color="#7F77DD" opacity="0.35" radius="0.42" radius-tubular="0.055"
+          animation="property: rotation; from: 0 0 0; to: -360 0 360; dur: 2000; loop: true; easing: linear">
+        </a-torus>
+        <a-cylinder id="beam-ring" color="#7F77DD" opacity="0.07" radius="0.12" height="6" position="0 -3 0"></a-cylinder>
+        <a-text id="label-ring" value="AR Sky" align="center" position="0 1.2 0" scale="1.5 1.5 1.5" color="white" look-at="[camera]"></a-text>
       </a-entity>
 
     </a-marker>
@@ -285,35 +216,47 @@
   </a-scene>
 
   <script>
-    // ============================================================
-    // CONFIGURE HERE — change the label text
-    // ============================================================
-    const LABEL_TEXT = "AR Sky";   // text floating above the object
-    const SKY_HEIGHT = 5;          // height above marker (meters) — increase to go higher
-    // ============================================================
+    // =========================================================
+    // CONFIGURE AQUI
+    // =========================================================
+    const LABEL    = "AR Sky";  // texto acima do objeto — mude para seu negócio
+    const SKY_HEIGHT = 6;       // altura em metros — aumente para subir mais no céu
+    // =========================================================
 
+    // Aplica label e altura configurados
+    document.querySelectorAll('[id^="label-"]').forEach(el => el.setAttribute('value', LABEL));
+    ['sphere','box','ring'].forEach(s => {
+      const obj = document.getElementById('obj-' + s);
+      obj.setAttribute('position', `0 ${SKY_HEIGHT} 0`);
+      const beam = document.getElementById('beam-' + s);
+      beam.setAttribute('height', SKY_HEIGHT);
+      beam.setAttribute('position', `0 ${-SKY_HEIGHT/2} 0`);
+    });
+
+    // Estado
     let currentShape = 'sphere';
     let currentColor = '#7F77DD';
+    const shapes = ['sphere','box','ring'];
 
-    const shapes = ['sphere', 'box', 'ring'];
-    const colorTargets = {
-      sphere: ['#sphere', 'a-torus'],
-      box:    ['#box'],
-      ring:   ['#ring', 'a-torus']
-    };
+    // Detecção do marcador
+    const marker  = document.getElementById('marker');
+    const status  = document.getElementById('status');
+    const hint    = document.getElementById('hint');
 
-    // Update label text from config
-    document.querySelectorAll('a-text[value="AR Sky"]').forEach(el => {
-      el.setAttribute('value', LABEL_TEXT);
+    hint.style.display = 'none';
+
+    marker.addEventListener('markerFound', () => {
+      status.textContent = 'Marcador detectado!';
+      status.style.background = 'rgba(15,110,86,0.8)';
+      hint.style.display = 'block';
+    });
+    marker.addEventListener('markerLost', () => {
+      status.textContent = 'Aponte a câmera para o marcador Kanji';
+      status.style.background = 'rgba(0,0,0,0.6)';
+      hint.style.display = 'none';
     });
 
-    // Update height from config
-    document.querySelectorAll('[id^="obj-"]').forEach(el => {
-      el.setAttribute('position', `0 ${SKY_HEIGHT} 0`);
-      el.querySelector('a-cylinder')?.setAttribute('height', SKY_HEIGHT);
-      el.querySelector('a-cylinder')?.setAttribute('position', `0 ${-SKY_HEIGHT/2} 0`);
-    });
-
+    // Trocar forma
     function setShape(shape, btn) {
       currentShape = shape;
       shapes.forEach(s => {
@@ -323,41 +266,17 @@
       btn.classList.add('active');
     }
 
+    // Trocar cor
     function setColor(color, btn) {
       currentColor = color;
-
-      // Update all shape colors
       document.querySelectorAll('a-sphere, a-box, a-torus, a-cylinder').forEach(el => {
-        const op = el.getAttribute('opacity');
-        if (!op || parseFloat(op) > 0.3) {
-          el.setAttribute('color', color);
-        } else {
-          el.setAttribute('color', color);
-        }
+        el.setAttribute('color', color);
       });
-
       document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     }
 
-    // Marker detection feedback
-    const marker = document.getElementById('marker');
-    const status = document.getElementById('status');
-    const hint   = document.getElementById('hint');
-
-    marker.addEventListener('markerFound', () => {
-      status.textContent = 'Marker detected — object is in the sky!';
-      status.style.background = 'rgba(15, 110, 86, 0.75)';
-      hint.textContent = 'Point camera up to see the object floating above';
-    });
-
-    marker.addEventListener('markerLost', () => {
-      status.textContent = 'Point camera at the Hiro marker';
-      status.style.background = 'rgba(0,0,0,0.6)';
-      hint.textContent = 'Keep the marker in view to anchor the object';
-    });
-
-    // Take photo
+    // Tirar foto
     function takePhoto() {
       const flash = document.getElementById('flash');
       flash.style.opacity = '1';
@@ -368,16 +287,15 @@
 
       setTimeout(() => {
         try {
-          const canvas = scene.canvas;
-          const dataURL = canvas.toDataURL('image/png');
+          const dataURL = scene.canvas.toDataURL('image/png');
           const link = document.createElement('a');
-          link.download = 'ar-photo.png';
+          link.download = 'ar-foto.png';
           link.href = dataURL;
           link.click();
-          status.textContent = 'Photo saved!';
-          setTimeout(() => status.textContent = 'Marker detected — object is in the sky!', 2000);
+          status.textContent = 'Foto salva!';
+          setTimeout(() => status.textContent = 'Marcador detectado!', 2000);
         } catch(e) {
-          status.textContent = 'Hold screen to save the photo';
+          status.textContent = 'Segure a tela para salvar';
         }
       }, 200);
     }
