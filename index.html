@@ -66,21 +66,20 @@ Aponte a câmera para o Kanji
   </a-entity>
 
   <!-- objeto independente -->
-    <a-entity
-        id="persistentObject"
-        visible="false">
+  <a-assets>
+      <a-asset-item id="meuModelo" src="modelo.glb"></a-asset-item>
+  </a-assets>
 
-        <a-gltf-model
-            src="modelo.glb"
-            scale="0.3 0.3 0.3">
-        </a-gltf-model>
-
-    </a-entity>
+  <a-entity
+      gltf-model="#meuModelo"
+      scale="0.3 0.3 0.3">
+  </a-entity>
 
 </a-scene>
 
 <script>
 
+const scene = document.querySelector("a-scene");
 const target = document.getElementById("target");
 const object = document.getElementById("persistentObject");
 
@@ -90,20 +89,37 @@ target.addEventListener("targetFound", () => {
 
     if (placed) return;
 
+    // posição mundial do marcador
     const pos = new THREE.Vector3();
     const quat = new THREE.Quaternion();
 
     target.object3D.getWorldPosition(pos);
     target.object3D.getWorldQuaternion(quat);
 
+    // eleva o objeto acima do marcador
+    pos.y += 0.5;
+
     object.object3D.position.copy(pos);
     object.object3D.quaternion.copy(quat);
 
     object.setAttribute("visible", true);
 
+    // esconder o scanner
+    target.setAttribute("visible", false);
+
+    // esconder mensagem
+    document.getElementById("status").style.display = "none";
+
     placed = true;
 
     console.log("Objeto fixado");
+
+    // parar rastreamento do MindAR
+    const arSystem = scene.systems["mindar-image-system"];
+    if (arSystem) {
+        arSystem.stop();
+    }
+
 });
 
 </script>
