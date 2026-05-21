@@ -93,35 +93,30 @@ Aponte a câmera para o Kanji
 
 <script>
 
-const target=document.querySelector('[mindar-image-target]');
-const status=document.getElementById('status');
+const target = document.getElementById("target");
+const object = document.getElementById("persistentObject");
 
-target.addEventListener("targetFound",()=>{
-  status.innerHTML="Kanji detectado!";
+let placed = false;
+
+target.addEventListener("targetFound", () => {
+
+    if (placed) return;
+
+    const pos = new THREE.Vector3();
+    const quat = new THREE.Quaternion();
+
+    target.object3D.getWorldPosition(pos);
+    target.object3D.getWorldQuaternion(quat);
+
+    object.object3D.position.copy(pos);
+    object.object3D.quaternion.copy(quat);
+
+    object.setAttribute("visible", true);
+
+    placed = true;
+
+    console.log("Objeto fixado");
 });
-
-target.addEventListener("targetLost",()=>{
-  status.innerHTML="Aponte a câmera para o Kanji";
-});
-
-document.getElementById('capture').onclick=()=>{
-
-  const scene=document.querySelector('a-scene');
-
-  scene.renderer.preserveDrawingBuffer=true;
-
-  setTimeout(()=>{
-
-    const dataURL=scene.canvas.toDataURL("image/png");
-
-    const a=document.createElement("a");
-    a.href=dataURL;
-    a.download="foto-ar.png";
-    a.click();
-
-  },200);
-
-};
 
 </script>
 
