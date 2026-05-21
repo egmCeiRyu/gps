@@ -54,27 +54,23 @@ Aponte a câmera para o Kanji
 
 <a-scene
   mindar-image="imageTargetSrc: targets.mind;"
-  color-space="sRGB"
   embedded
+  color-space="sRGB"
   vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
 >
 
-  <a-assets>
-  </a-assets>
+  <a-camera position="0 0 0"></a-camera>
 
-  <a-camera
-      position="0 0 0"
-      look-controls="enabled: false">
-  </a-camera>
+  <!-- marcador -->
+  <a-entity id="target" mindar-image-target="targetIndex: 0">
+  </a-entity>
 
-  <!-- Target 0 -->
-  <a-entity mindar-image-target="targetIndex: 0">
+  <!-- objeto independente -->
+  <a-entity
+      id="persistentObject"
+      visible="false">
 
-      <!-- esfera -->
       <a-sphere
-          id="orb"
-          position="0 0.5 0"
           radius="0.25"
           color="#7F77DD"
           animation="
@@ -82,33 +78,13 @@ Aponte a câmera para o Kanji
             to: 0 360 0;
             dur: 3000;
             loop: true;
-            easing: linear;">
+            easing: linear">
       </a-sphere>
 
-      <!-- anel -->
-      <a-torus
-          position="0 0.5 0"
-          radius="0.4"
-          radius-tubular="0.02"
-          color="#7F77DD"
-          opacity="0.4"
-          rotation="90 0 0"
-          animation="
-            property: rotation;
-            from: 90 0 0;
-            to: 90 360 0;
-            dur: 2500;
-            loop: true;
-            easing: linear;">
-      </a-torus>
-
-      <!-- texto -->
       <a-text
           value="AR Sky"
-          position="0 0.9 0"
           align="center"
-          color="#FFFFFF"
-          scale="0.8 0.8 0.8">
+          position="0 0.5 0">
       </a-text>
 
   </a-entity>
