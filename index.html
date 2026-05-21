@@ -66,28 +66,16 @@ Aponte a câmera para o Kanji
   </a-entity>
 
   <!-- objeto independente -->
-  <a-entity
-      id="persistentObject"
-      visible="false">
+    <a-entity
+        id="persistentObject"
+        visible="false">
 
-      <a-sphere
-          radius="0.25"
-          color="#7F77DD"
-          animation="
-            property: rotation;
-            to: 0 360 0;
-            dur: 3000;
-            loop: true;
-            easing: linear">
-      </a-sphere>
+        <a-gltf-model
+            src="modelo.glb"
+            scale="0.3 0.3 0.3">
+        </a-gltf-model>
 
-      <a-text
-          value="AR Sky"
-          align="center"
-          position="0 0.5 0">
-      </a-text>
-
-  </a-entity>
+    </a-entity>
 
 </a-scene>
 
