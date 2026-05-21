@@ -20,14 +20,14 @@ const onxrloaded = () => {
   XR8.XrController.configure({
     imageTargetData: [
       {
-        name: 'seu-panfleto', 
-        // IMPORTANTE: Deixe sem o ponto-barra (./) no início para o GitHub Pages achar direto na raiz do repositório!
-        imagePath: 'image-targets/seu-panfleto_original.png', 
-        metadata: 'image-targets/seu-panfleto.json'
+        name: 'seu-panfleto',
+        // Injetamos a pasta 'image/' que estava faltando no caminho!
+        imagePath: 'image/image-targets/seu-panfleto_original.jpg',
+        metadata: 'image/image-targets/seu-panfleto.json'
       }
     ]
   })
-  console.log("🎯 Dados do Kanji injetados com sucesso!");
+  console.log("🎯 Caminho corrigido com sucesso!");
 }
 
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
