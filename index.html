@@ -1,86 +1,119 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>AR Sky Object</title>
 
-  <!-- A-Frame -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <!-- AR.js com suporte a GPS e DeviceOrientation -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { overflow: hidden; font-family: sans-serif; }
+    body { overflow: hidden; font-family: sans-serif; background: #000; }
 
-    #ui-overlay {
+    #ui {
       position: absolute;
       top: 0; left: 0; right: 0;
       z-index: 999;
       padding: 12px 16px;
+      pointer-events: none;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      pointer-events: none;
     }
 
-    #status-bar {
-      background: rgba(0,0,0,0.55);
+    #status {
+      background: rgba(0,0,0,0.6);
       color: #fff;
       font-size: 13px;
-      padding: 8px 14px;
+      padding: 8px 16px;
       border-radius: 20px;
       text-align: center;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
     }
 
-    #distance-bar {
-      background: rgba(0,0,0,0.55);
+    #hint {
+      background: rgba(31, 158, 117, 0.85);
       color: #fff;
       font-size: 13px;
-      padding: 8px 14px;
+      padding: 8px 16px;
       border-radius: 20px;
       text-align: center;
-      backdrop-filter: blur(4px);
-      display: none;
-    }
-
-    #compass-hint {
-      background: rgba(30, 158, 117, 0.85);
-      color: #fff;
-      font-size: 13px;
-      padding: 8px 14px;
-      border-radius: 20px;
-      text-align: center;
-      display: none;
     }
 
     #btn-photo {
       position: absolute;
-      bottom: 40px;
+      bottom: 44px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 999;
-      width: 72px;
-      height: 72px;
+      width: 74px;
+      height: 74px;
       border-radius: 50%;
-      border: 4px solid #fff;
-      background: rgba(255,255,255,0.25);
+      border: 4px solid rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.2);
       backdrop-filter: blur(4px);
       cursor: pointer;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
     }
     #btn-photo::after {
       content: '';
-      width: 54px;
-      height: 54px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      background: #fff;
+      background: rgba(255,255,255,0.85);
       display: block;
     }
+    #btn-photo:active { transform: translateX(-50%) scale(0.95); }
+
+    #shape-picker {
+      position: absolute;
+      bottom: 44px;
+      right: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .shape-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.7);
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .shape-btn.active {
+      background: rgba(127,119,221,0.8);
+      border-color: #fff;
+    }
+
+    #color-picker {
+      position: absolute;
+      bottom: 44px;
+      left: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .color-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.6);
+      cursor: pointer;
+    }
+    .color-btn.active { border-color: #fff; transform: scale(1.15); }
 
     #flash {
       position: absolute;
@@ -89,219 +122,262 @@
       z-index: 9999;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.05s;
+      transition: opacity 0.06s;
     }
 
-    #debug {
+    #marker-ref {
       position: absolute;
       bottom: 130px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 999;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       color: #fff;
       font-size: 11px;
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 12px;
       text-align: center;
-      display: none;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
 
-  <div id="ui-overlay">
-    <div id="status-bar">Aguardando GPS...</div>
-    <div id="distance-bar"></div>
-    <div id="compass-hint">Aponte a câmera para o céu sobre o local</div>
+  <div id="ui">
+    <div id="status">Point camera at the Hiro marker</div>
+    <div id="hint">Print the marker below — object appears above it</div>
   </div>
 
-  <div id="btn-photo" onclick="takePhoto()"></div>
+  <div id="color-picker">
+    <div class="color-btn active" style="background:#7F77DD" onclick="setColor('#7F77DD', this)"></div>
+    <div class="color-btn" style="background:#1D9E75" onclick="setColor('#1D9E75', this)"></div>
+    <div class="color-btn" style="background:#D85A30" onclick="setColor('#D85A30', this)"></div>
+    <div class="color-btn" style="background:#EF9F27" onclick="setColor('#EF9F27', this)"></div>
+    <div class="color-btn" style="background:#fff" onclick="setColor('#ffffff', this)"></div>
+  </div>
+
+  <div id="shape-picker">
+    <button class="shape-btn active" onclick="setShape('sphere', this)" title="Sphere">●</button>
+    <button class="shape-btn" onclick="setShape('box', this)" title="Box">■</button>
+    <button class="shape-btn" onclick="setShape('ring', this)" title="Ring">○</button>
+  </div>
+
+  <div id="btn-photo" onclick="takePhoto()" title="Take photo"></div>
+  <div id="marker-ref">Marker: Hiro pattern · <a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png" style="color:#9FE1CB" target="_blank">tap to open & print</a></div>
   <div id="flash"></div>
-  <div id="debug"></div>
 
   <a-scene
-    vr-mode-ui="enabled: false"
-    arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
     embedded
-    renderer="logarithmicDepthBuffer: true; colorManagement: true;"
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
   >
 
-    <!-- ============================================================
-         CONFIGURE AQUI:
-         Coloque as coordenadas GPS do seu estabelecimento
-         e ajuste o objeto 3D que quer mostrar no céu
-    ============================================================ -->
+    <a-marker preset="hiro" id="marker">
 
-    <!-- Objeto no céu: muda latitude/longitude para o seu local -->
-    <!-- O "altitude" no gps-entity-place não é suportado diretamente,
-         então usamos position="0 HEIGHT 0" para elevar o objeto -->
+      <!-- ============================================================
+           Object floats HIGH above the marker so it appears in the sky.
+           position="0 HEIGHT 0" — increase Y to go higher.
+           At ~1m print distance: Y=3 = ~3m above marker in real world.
+           ============================================================ -->
 
-    <a-entity id="sky-object"
-      gps-entity-place="latitude: SEU_LATITUDE; longitude: SEU_LONGITUDE;"
-      look-at="[gps-camera]"
-    >
-      <!-- Objeto principal: troque pelo seu modelo ou forma -->
-      <!-- Exemplo: estrela / logo flutuando no céu -->
-      <a-entity position="0 80 0">
-
-        <!-- Anel externo -->
+      <!-- SPHERE -->
+      <a-entity id="obj-sphere" position="0 5 0" visible="true">
+        <a-sphere
+          id="sphere"
+          radius="0.6"
+          color="#7F77DD"
+          animation="property: rotation; to: 0 360 0; dur: 3000; loop: true; easing: linear"
+          animation__pulse="property: scale; to: 1.15 1.15 1.15; dur: 1200; loop: true; dir: alternate; easing: easeInOutSine"
+        ></a-sphere>
+        <!-- Glow ring around sphere -->
         <a-torus
           color="#7F77DD"
-          radius="12"
-          radius-tubular="1.5"
+          opacity="0.35"
+          radius="0.9"
+          radius-tubular="0.04"
           rotation="90 0 0"
-          animation="property: rotation; to: 90 360 0; dur: 4000; loop: true; easing: linear"
+          animation="property: rotation; from: 90 0 0; to: 90 360 0; dur: 2500; loop: true; easing: linear"
         ></a-torus>
-
-        <!-- Esfera central -->
-        <a-sphere
-          color="#1D9E75"
-          radius="7"
-          animation="property: scale; to: 1.1 1.1 1.1; dur: 1500; loop: true; dir: alternate; easing: easeInOutSine"
-        ></a-sphere>
-
-        <!-- Texto acima do objeto — coloque o nome do seu negócio -->
-        <a-text
-          value="Seu Negócio"
-          align="center"
-          position="0 12 0"
-          scale="20 20 20"
-          color="white"
-        ></a-text>
-
-        <!-- Raio de luz saindo do objeto para o chão (indicador visual) -->
+        <!-- Light beam down to marker -->
         <a-cylinder
           color="#7F77DD"
-          opacity="0.15"
-          radius="2"
-          height="80"
-          position="0 -40 0"
+          opacity="0.08"
+          radius="0.15"
+          height="5"
+          position="0 -2.5 0"
         ></a-cylinder>
-
+        <!-- Floating label -->
+        <a-text
+          value="AR Sky"
+          align="center"
+          position="0 1.1 0"
+          scale="1.4 1.4 1.4"
+          color="white"
+          look-at="[camera]"
+        ></a-text>
       </a-entity>
-    </a-entity>
 
-    <!-- ============================================================ -->
+      <!-- BOX (hidden by default) -->
+      <a-entity id="obj-box" position="0 5 0" visible="false">
+        <a-box
+          id="box"
+          width="0.9" height="0.9" depth="0.9"
+          color="#7F77DD"
+          animation="property: rotation; to: 45 360 45; dur: 3500; loop: true; easing: linear"
+        ></a-box>
+        <a-cylinder
+          color="#7F77DD"
+          opacity="0.08"
+          radius="0.15"
+          height="5"
+          position="0 -2.5 0"
+        ></a-cylinder>
+        <a-text
+          value="AR Sky"
+          align="center"
+          position="0 1.1 0"
+          scale="1.4 1.4 1.4"
+          color="white"
+          look-at="[camera]"
+        ></a-text>
+      </a-entity>
 
-    <a-camera gps-camera rotation-reader id="camera"></a-camera>
+      <!-- RING (hidden by default) -->
+      <a-entity id="obj-ring" position="0 5 0" visible="false">
+        <a-torus
+          id="ring"
+          color="#7F77DD"
+          radius="0.7"
+          radius-tubular="0.1"
+          animation="property: rotation; to: 360 360 0; dur: 3000; loop: true; easing: linear"
+        ></a-torus>
+        <!-- Inner ring -->
+        <a-torus
+          color="#7F77DD"
+          opacity="0.4"
+          radius="0.4"
+          radius-tubular="0.05"
+          animation="property: rotation; from: 0 0 0; to: -360 0 360; dur: 2000; loop: true; easing: linear"
+        ></a-torus>
+        <a-cylinder
+          color="#7F77DD"
+          opacity="0.08"
+          radius="0.15"
+          height="5"
+          position="0 -2.5 0"
+        ></a-cylinder>
+        <a-text
+          value="AR Sky"
+          align="center"
+          position="0 1.1 0"
+          scale="1.4 1.4 1.4"
+          color="white"
+          look-at="[camera]"
+        ></a-text>
+      </a-entity>
+
+    </a-marker>
+
+    <a-entity camera id="camera"></a-entity>
 
   </a-scene>
 
   <script>
     // ============================================================
-    // CONFIGURE AQUI — mude para as coordenadas do seu local
+    // CONFIGURE HERE — change the label text
     // ============================================================
-    const TARGET_LAT = -23.5505;   // latitude do seu estabelecimento
-    const TARGET_LNG = -46.6333;   // longitude do seu estabelecimento
-    const TARGET_NAME = "Seu Negócio"; // nome para exibir
+    const LABEL_TEXT = "AR Sky";   // text floating above the object
+    const SKY_HEIGHT = 5;          // height above marker (meters) — increase to go higher
     // ============================================================
 
-    const statusBar = document.getElementById('status-bar');
-    const distanceBar = document.getElementById('distance-bar');
-    const compassHint = document.getElementById('compass-hint');
-    const btnPhoto = document.getElementById('btn-photo');
-    const debugEl = document.getElementById('debug');
+    let currentShape = 'sphere';
+    let currentColor = '#7F77DD';
 
-    let userLat = null;
-    let userLng = null;
-    let ready = false;
+    const shapes = ['sphere', 'box', 'ring'];
+    const colorTargets = {
+      sphere: ['#sphere', 'a-torus'],
+      box:    ['#box'],
+      ring:   ['#ring', 'a-torus']
+    };
 
-    // Calcula distância em metros entre dois pontos GPS (fórmula Haversine)
-    function haversineDistance(lat1, lng1, lat2, lng2) {
-      const R = 6371000;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLng = (lng2 - lng1) * Math.PI / 180;
-      const a = Math.sin(dLat/2)**2 +
-                Math.cos(lat1 * Math.PI/180) *
-                Math.cos(lat2 * Math.PI/180) *
-                Math.sin(dLng/2)**2;
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
+    // Update label text from config
+    document.querySelectorAll('a-text[value="AR Sky"]').forEach(el => {
+      el.setAttribute('value', LABEL_TEXT);
+    });
 
-    // Calcula direção (bearing) em graus de um ponto para outro
-    function bearing(lat1, lng1, lat2, lng2) {
-      const dLng = (lng2 - lng1) * Math.PI / 180;
-      const y = Math.sin(dLng) * Math.cos(lat2 * Math.PI / 180);
-      const x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) -
-                Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLng);
-      return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
-    }
+    // Update height from config
+    document.querySelectorAll('[id^="obj-"]').forEach(el => {
+      el.setAttribute('position', `0 ${SKY_HEIGHT} 0`);
+      el.querySelector('a-cylinder')?.setAttribute('height', SKY_HEIGHT);
+      el.querySelector('a-cylinder')?.setAttribute('position', `0 ${-SKY_HEIGHT/2} 0`);
+    });
 
-    // Atualiza posição do usuário
-    function onPosition(pos) {
-      userLat = pos.coords.latitude;
-      userLng = pos.coords.longitude;
-
-      const dist = haversineDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
-      const dir = bearing(userLat, userLng, TARGET_LAT, TARGET_LNG);
-
-      const dirLabel = compassDirection(dir);
-
-      let distText = dist < 1000
-        ? `${Math.round(dist)}m`
-        : `${(dist/1000).toFixed(1)}km`;
-
-      statusBar.textContent = `GPS ativo · ${TARGET_NAME}`;
-      distanceBar.style.display = 'block';
-      distanceBar.textContent = `${distText} · Direção: ${dirLabel} (${Math.round(dir)}°)`;
-      compassHint.style.display = 'block';
-      btnPhoto.style.display = 'flex';
-      ready = true;
-
-      // Debug info
-      debugEl.style.display = 'block';
-      debugEl.textContent = `Você: ${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
-    }
-
-    function compassDirection(deg) {
-      const dirs = ['N','NE','L','SE','S','SO','O','NO'];
-      return dirs[Math.round(deg / 45) % 8];
-    }
-
-    function onError(err) {
-      statusBar.textContent = 'GPS não disponível — verifique as permissões';
-    }
-
-    // Inicia rastreamento GPS contínuo
-    if (navigator.geolocation) {
-      navigator.geolocation.watchPosition(onPosition, onError, {
-        enableHighAccuracy: true,
-        maximumAge: 3000,
-        timeout: 10000
+    function setShape(shape, btn) {
+      currentShape = shape;
+      shapes.forEach(s => {
+        document.getElementById('obj-' + s).setAttribute('visible', s === shape);
       });
-    } else {
-      statusBar.textContent = 'GPS não suportado neste dispositivo';
+      document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     }
 
-    // ============================================================
-    // Função de tirar foto (captura o canvas do A-Frame + câmera)
-    // ============================================================
+    function setColor(color, btn) {
+      currentColor = color;
+
+      // Update all shape colors
+      document.querySelectorAll('a-sphere, a-box, a-torus, a-cylinder').forEach(el => {
+        const op = el.getAttribute('opacity');
+        if (!op || parseFloat(op) > 0.3) {
+          el.setAttribute('color', color);
+        } else {
+          el.setAttribute('color', color);
+        }
+      });
+
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    // Marker detection feedback
+    const marker = document.getElementById('marker');
+    const status = document.getElementById('status');
+    const hint   = document.getElementById('hint');
+
+    marker.addEventListener('markerFound', () => {
+      status.textContent = 'Marker detected — object is in the sky!';
+      status.style.background = 'rgba(15, 110, 86, 0.75)';
+      hint.textContent = 'Point camera up to see the object floating above';
+    });
+
+    marker.addEventListener('markerLost', () => {
+      status.textContent = 'Point camera at the Hiro marker';
+      status.style.background = 'rgba(0,0,0,0.6)';
+      hint.textContent = 'Keep the marker in view to anchor the object';
+    });
+
+    // Take photo
     function takePhoto() {
-      // Flash visual
       const flash = document.getElementById('flash');
       flash.style.opacity = '1';
-      setTimeout(() => flash.style.opacity = '0', 120);
+      setTimeout(() => flash.style.opacity = '0', 100);
 
-      // Captura o canvas do WebGL (A-Frame)
       const scene = document.querySelector('a-scene');
-      const canvas = scene.canvas;
-
-      // Solicita ao A-Frame para preservar o buffer antes de capturar
       scene.renderer.preserveDrawingBuffer = true;
 
       setTimeout(() => {
         try {
+          const canvas = scene.canvas;
           const dataURL = canvas.toDataURL('image/png');
           const link = document.createElement('a');
           link.download = 'ar-photo.png';
           link.href = dataURL;
           link.click();
-          statusBar.textContent = 'Foto salva!';
-          setTimeout(() => statusBar.textContent = 'GPS ativo · ' + TARGET_NAME, 2000);
+          status.textContent = 'Photo saved!';
+          setTimeout(() => status.textContent = 'Marker detected — object is in the sky!', 2000);
         } catch(e) {
-          // Fallback: abre em nova aba para salvar manualmente
-          statusBar.textContent = 'Segure a tela para salvar a foto';
+          status.textContent = 'Hold screen to save the photo';
         }
       }, 200);
     }
