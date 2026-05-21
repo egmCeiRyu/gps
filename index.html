@@ -55,24 +55,18 @@ Aponte a câmera para o Kanji
 <a-scene
   mindar-image="imageTargetSrc: targets.mind;"
   embedded
-  color-space="sRGB"
-  vr-mode-ui="enabled: false"
 >
 
   <a-camera position="0 0 0"></a-camera>
 
-  <a-light type="ambient" intensity="2"></a-light>
+  <a-light type="ambient" intensity="5"></a-light>
 
-  <a-entity id="target" mindar-image-target="targetIndex: 0">
+  <a-entity mindar-image-target="targetIndex:0">
 
-      <a-box
-          id="cube"
+      <a-sphere
           color="red"
-          position="0 0.5 0"
-          width="0.5"
-          height="0.5"
-          depth="0.5">
-      </a-box>
+          radius="1">
+      </a-sphere>
 
   </a-entity>
 
