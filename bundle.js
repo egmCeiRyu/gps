@@ -16,23 +16,23 @@ AFRAME.registerComponent('alvo-persistente', {
   }
 });
 
-// ATUALIZE AS ÚLTIMAS LINHAS DO SEU BUNDLE.JS
 const onxrloaded = () => {
-  // 1. Passamos os dados da imagem (A placa de madeira)
+  // 1. Passamos as rotas exatas apontando tudo para .png!
   XR8.XrController.configure({
     imageTargetData: [
       {
-        name: 'toggle-slam',
-        imagePath: 'image/image-targets/toggle-slam_original.jpg',
-        metadata: 'image/image-targets/toggle-slam.json'
+        name: '20_Element_Fire',
+        imagePath: 'image/image-targets/20_Element_Fire_original.png', // CORRIGIDO PARA .PNG!
+        metadata: 'image/image-targets/20_Element_Fire.json'
       }
     ]
   });
 
-  // 🔥 O QUE FALTAVA: Comando obrigatório para ligar o scanner de imagem da câmera!
-  XR8.XrController.configure({imageTargets: ['toggle-slam']});
+  // 2. Ativa o scanner em tempo real para a carta de fogo
+  XR8.XrController.configure({imageTargets: ['20_Element_Fire']});
 
-  console.log("🎯 MOTOR DE IMAGEM LIGADO E ATIVADO!");
+  console.log("🎯 Scanner ativado para a carta de Fogo (TUDO EM PNG)!");
 }
 
+// Executa assim que o motor do 8th Wall carregar
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);

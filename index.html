@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>8th Wall - Teste União de Imagem</title>
+  <title>8th Wall - Image Target Estático</title>
 
   <script src="./external/scripts/8frame-1.5.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
@@ -27,15 +27,18 @@
 
     <a-camera id="camera" position="0 1.6 0"></a-camera>
 
-    <a-named-image-target name="toggle-slam" alvo-persistente>
-    <a-box 
-      id="targetModel"
-      position="0 0.1 0" 
-      material="color: red; opacity: 0.8;" 
-      scale="0.2 0.2 0.2"
-      visible="false">
-    </a-box>
-   </a-named-image-target>
+    <a-named-image-target name="20_Element_Fire" alvo-persistente>
+       
+       <a-box 
+         id="targetModel"
+         position="0 0.1 0" 
+         material="color: red; opacity: 0.9;" 
+         scale="0.2 0.2 0.2"
+         visible="false">
+       </a-box>
+
+    </a-named-image-target>
+
   </a-scene>
 
   <script src="bundle.js"></script>
