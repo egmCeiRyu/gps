@@ -9,14 +9,14 @@
     "originalWidth": 1200,
     "originalHeight": 1200
   },
-  "imagePath": "image-targets/seu-panfleto_original.jpg",
+  "imagePath": "image-targets/seu-panfleto_original.png",
   "metadata": null,
   "name": "seu-panfleto",
   "resources": {
-    "originalImage": "seu-panfleto_original.jpg",
-    "croppedImage": "seu-panfleto_original.jpg",
-    "thumbnailImage": "seu-panfleto_original.jpg",
-    "luminanceImage": "seu-panfleto_original.jpg"
+    "originalImage": "seu-panfleto_original.png",
+    "croppedImage": "seu-panfleto_original.png",
+    "thumbnailImage": "seu-panfleto_original.png",
+    "luminanceImage": "seu-panfleto_original.png"
   },
   "created": 1779364170640,
   "updated": 1779364170640

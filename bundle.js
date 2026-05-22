@@ -23,7 +23,7 @@ const onxrloaded = () => {
       {
         name: 'seu-panfleto',
         // Caminho exato com base na pasta "image" que está dentro de "gps"
-        imagePath: 'image/image-targets/seu-panfleto_original.jpg',
+        imagePath: 'image/image-targets/seu-panfleto_original.png',
         metadata: 'image/image-targets/seu-panfleto.json'
       }
     ]
