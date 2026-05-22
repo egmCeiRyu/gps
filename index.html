@@ -7,6 +7,7 @@
 
   <script src="./external/scripts/8frame-1.5.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam,image"></script>
 
   <style>
@@ -31,17 +32,17 @@
 </head>
 <body>
 
-  <div id="status">🔍 Aponte para a imagem do fogo...</div>
+  <div id="status">⏳ Carregando...</div>
 
   <a-scene
     xrextras-loading
     xrextras-runtime-error
     renderer="colorManagement: true; antialias: true"
-    xrweb="local-tracking: true; imageTargetFolder: ./;">
+    xrweb="local-tracking: true;">
 
     <a-camera position="0 1.6 0"></a-camera>
 
-    <a-named-image-target name="20_Element_Fire" alvo-persistente>
+    <a-named-image-target name="20_Element_Fire">
       <a-box
         id="cubo"
         position="0 0.15 0"
