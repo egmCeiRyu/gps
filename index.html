@@ -54,6 +54,14 @@
         const modelo3d = el.querySelector('a-entity'); 
 
         el.addEventListener('xrimagefound', () => {
+          // TESTE DE FOGO: Se o celular ler o Kanji, vai travar a tela com este aviso!
+          alert("🎯 BOA CABEÇÃO! O IMAGE TARGET FUNCIONOU!"); 
+        
+          console.log("🎯 Imagem encontrada pelo motor oficial!");
+          modelo3d.setAttribute('visible', 'true');
+        });
+
+        el.addEventListener('xrimagefound', () => {
           console.log("🎯 Imagem encontrada pelo motor oficial!");
           modelo3d.setAttribute('visible', 'true');
         });
