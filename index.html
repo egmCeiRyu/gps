@@ -1,137 +1,76 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>AR - Element Fire</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>AR - Element Fire</title>
 
-  <!-- 1. A-Frame (8th Wall fork) — DEVE ser o primeiro -->
-  <script src="./external/scripts/8frame-1.5.0.min.js"></script>
+    <!-- 1. Engine binary 8th Wall via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js"
+            async crossorigin="anonymous"
+            data-preload-chunks="image">
+    </script>
 
-  <!-- 2. XR Extras (componentes como a-named-image-target) -->
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
+    <!-- 2. Landing page -->
+    <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js"
+            crossorigin="anonymous">
+    </script>
 
-  <!-- 3. Landing page (opcional, pode remover) -->
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- 4. Motor 8th Wall — preload slam e image -->
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js"
-    async crossorigin="anonymous"
-    data-preload-chunks="slam,image">
-  </script>
+        body {
+            overflow: hidden;
+            font-family: sans-serif;
+        }
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { overflow: hidden; }
+        #status {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
+            z-index: 9999;
+            text-align: center;
+            pointer-events: none;
+            white-space: nowrap;
+        }
 
-    #status {
-      position: absolute;
-      top: 16px; left: 50%;
-      transform: translateX(-50%);
-      background: rgba(200,0,0,0.82);
-      color: white;
-      padding: 10px 20px;
-      font-family: sans-serif;
-      font-size: 14px;
-      font-weight: bold;
-      border-radius: 20px;
-      z-index: 9999;
-      text-align: center;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-    #status.found  { background: rgba(15,130,86,0.88); }
-    #status.error  { background: rgba(180,40,0,0.92); }
-  </style>
+            #status.found {
+                background: rgba(15,130,86,0.9);
+            }
+
+            #status.error {
+                background: rgba(200,0,0,0.9);
+            }
+
+        #canvas-container {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
 </head>
 <body>
 
-  <div id="status">🔍 Aponte para a imagem do fogo...</div>
+    <div id="status">🔍 Aponte para a imagem do fogo...</div>
+    <div id="canvas-container"></div>
 
-  <a-scene
-    landing-page
-    xrextras-loading
-    xrextras-runtime-error
-    renderer="colorManagement: true; antialias: true"
-    xrweb>
-
-    <a-camera position="0 1.6 0"></a-camera>
-
-    <!--
-      a-named-image-target: o atributo "name" deve ser
-      EXATAMENTE igual ao campo "name" no arquivo .json
-      e ao que você passa em imageTargets: ['20_Element_Fire']
-    -->
-    <a-named-image-target name="20_Element_Fire">
-
-      <!-- Seu objeto 3D aqui — visível true para testar,
-           mude para false e controle via JS depois -->
-      <a-box
-        id="targetModel"
-        position="0 0.15 0"
-        scale="0.25 0.25 0.25"
-        material="color: #ff6600; opacity: 0.95;"
-        animation="property: rotation; to: 0 360 0; dur: 2000; loop: true; easing: linear"
-        visible="true">
-      </a-box>
-
-    </a-named-image-target>
-
-  </a-scene>
-
-  <!-- bundle.js DEPOIS do a-scene -->
-  <script src="./bundle.js"></script>
-
-  <script>
-    const status = document.getElementById('status');
-
-    const onXRLoaded = () => {
-      console.log('✅ XR8 carregado');
-
-      // Configura image target — UMA única chamada com tudo junto
-      XR8.XrController.configure({
-        imageTargets: ['20_Element_Fire'],
-        imageTargetData: [
-          {
-            name: '20_Element_Fire',
-            // Caminho relativo à raiz do projeto
-            // Deve bater com "imagePath" dentro do .json
-            jsonPath: './20_Element_Fire.json',
-          }
-        ]
-      });
-
-      // Eventos do target via a-named-image-target
-      const target = document.querySelector('a-named-image-target');
-
-      target.addEventListener('xrimagefound', (e) => {
-        console.log('🎯 Imagem encontrada!', e.detail);
-        status.textContent = '🎯 Imagem encontrada!';
-        status.classList.add('found');
-        status.classList.remove('error');
-      });
-
-      target.addEventListener('xrimageupdated', (e) => {
-        console.log('🔄 Imagem atualizada', e.detail);
-      });
-
-      target.addEventListener('xrimagelost', (e) => {
-        console.log('👁️ Imagem perdida');
-        status.textContent = '🔍 Aponte para a imagem do fogo...';
-        status.classList.remove('found');
-      });
-
-      // Erro do motor
-      window.addEventListener('xrerror', (e) => {
-        console.error('🚨 XR Error:', e.detail);
-        status.textContent = '🚨 Erro: ' + (e.detail?.message || 'desconhecido');
-        status.classList.add('error');
-      });
-    };
-
-    // Aguarda o motor carregar
-    window.XR8 ? onXRLoaded() : window.addEventListener('xrloaded', onXRLoaded);
-  </script>
+    <script src="./bundle.js"></script>
 
 </body>
 </html>
