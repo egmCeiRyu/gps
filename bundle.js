@@ -17,22 +17,19 @@ AFRAME.registerComponent('alvo-persistente', {
 });
 
 const onxrloaded = () => {
-  // 1. Passamos as rotas exatas apontando tudo para .png!
   XR8.XrController.configure({
     imageTargetData: [
       {
         name: '20_Element_Fire',
-        imagePath: 'image/image-targets/20_Element_Fire_original.png', // CORRIGIDO PARA .PNG!
-        metadata: 'image/image-targets/20_Element_Fire.json'
+        // Usamos "./" no começo para forçar o navegador a buscar a partir da pasta atual do site
+        imagePath: './image/image-targets/20_Element_Fire_original.png', 
+        metadata: './image/image-targets/20_Element_Fire.json'
       }
     ]
   });
 
-  // 2. Ativa o scanner em tempo real para a carta de fogo
   XR8.XrController.configure({imageTargets: ['20_Element_Fire']});
-
-  console.log("🎯 Scanner ativado para a carta de Fogo (TUDO EM PNG)!");
+  console.log("🎯 Scanner configurado com caminhos relativos!");
 }
 
-// Executa assim que o motor do 8th Wall carregar
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
