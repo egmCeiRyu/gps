@@ -17,19 +17,15 @@ AFRAME.registerComponent('alvo-persistente', {
 });
 
 const onxrloaded = () => {
-  // Configuração explícita injetando a localização correta detetada na estrutura
   XR8.XrController.configure({
     imageTargetData: [
       {
-        name: 'seu-panfleto',
-        // Caminho exato com base na pasta "image" que está dentro de "gps"
-        imagePath: 'image/image-targets/seu-panfleto_original.png',
-        metadata: 'image/image-targets/seu-panfleto.json'
+        name: 'toggle-slam',
+        imagePath: 'image/image-targets/toggle-slam_original.jpg',
+        metadata: 'image/image-targets/toggle-slam.json'
       }
     ]
-  })
-  console.log("🎯 Alvo configurado com o caminho: image/image-targets/");
+  });
+  console.log("🚀 Alvo oficial toggle-slam injetado!");
 }
-
-// Inicializa o motor assim que estiver pronto
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
