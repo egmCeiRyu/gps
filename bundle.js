@@ -1,56 +1,33 @@
-// bundle.js — Versão Open Source sem depender de JSON quebrado!
+// bundle.js — Apenas controle dos eventos visuais
 
-window.addEventListener('xrloaded', () => {
-  console.log('✅ XR8 Open Source Carregado');
+AFRAME.registerComponent('alvo-persistente', {
+  init: function () {
+    const el = this.el;
+    const cubo = el.querySelector('#cubo');
 
-  const inicializarAR = () => {
-    if (!XR8.XrController) {
-      setTimeout(inicializarAR, 100);
-      return;
-    }
-
-    // Passamos a imagem colorida direto para o motor ler, sem precisar do arquivo .json!
-    XR8.XrController.configure({
-      imageTargetData: [
-        {
-          name: '20_Element_Fire',
-          imagePath: './20_Element_Fire_original.png', // Usa a foto colorida direto na raiz
-          metadata: null
-        }
-      ]
+    // Quando o olho do 8th Wall reconhecer os metadados da imagem
+    el.addEventListener('xrimagefound', () => {
+      console.log('🎯 Imagem do Fogo Encontrada!');
+      
+      // Atualiza a barra de status no topo
+      const status = document.getElementById('status');
+      if (status) {
+        status.textContent = '🎯 Imagem encontrada!';
+        status.className = 'found';
+      }
+      
+      // Torna o cubo visível
+      if (cubo) cubo.setAttribute('visible', 'true');
     });
 
-    // Liga o olho do scanner
-    XR8.XrController.configure({ imageTargets: ['20_Element_Fire'] });
-    console.log('🎯 Scanner forçado na imagem original!');
-
-    XR8.addCameraPipelineModule(XRExtras.Loading.pipelineModule());
-    XR8.addCameraPipelineModule(XRExtras.RuntimeError.pipelineModule());
-
-    const scene = document.querySelector('a-scene');
-    scene.setAttribute('xrweb', 'local-tracking: true;');
-
-    const status = document.getElementById('status');
-    const target = document.querySelector('a-named-image-target');
-
-    if (status) status.textContent = '🔍 Aponte para a imagem do fogo...';
-
-    if (target) {
-      target.addEventListener('xrimagefound', () => {
-        if (status) {
-          status.textContent = '🎯 Imagem encontrada!';
-          status.className = 'found';
-        }
-      });
-
-      target.addEventListener('xrimagelost', () => {
-        if (status) {
-          status.textContent = '🔍 Aponte para a imagem do fogo...';
-          status.className = '';
-        }
-      });
-    }
-  };
-
-  inicializarAR();
+    // Quando a câmera perder a imagem de vista
+    el.addEventListener('xrimagelost', () => {
+      console.log('🔍 Imagem perdida.');
+      const status = document.getElementById('status');
+      if (status) {
+        status.textContent = '🔍 Aponte para a imagem do fogo...';
+        status.className = '';
+      }
+    });
+  }
 });

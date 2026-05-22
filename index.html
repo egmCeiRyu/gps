@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -7,10 +7,7 @@
 
   <script src="./external/scripts/8frame-1.5.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js"
-    async crossorigin="anonymous"
-    data-preload-chunks="slam,image">
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam,image"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,26 +27,27 @@
       pointer-events: none;
     }
     #status.found { background: rgba(15,130,86,0.9); }
-    #status.error { background: rgba(200,0,0,0.9); }
   </style>
 </head>
 <body>
 
-  <div id="status">⏳ Carregando...</div>
+  <div id="status">🔍 Aponte para a imagem do fogo...</div>
 
-  <!-- SEM xrweb aqui — engine iniciado manualmente no bundle.js -->
   <a-scene
     xrextras-loading
     xrextras-runtime-error
-    renderer="colorManagement: true; antialias: true">
+    renderer="colorManagement: true; antialias: true"
+    xrweb="local-tracking: true; imageTargetFolder: ./;">
 
     <a-camera position="0 1.6 0"></a-camera>
 
-    <a-named-image-target name="20_Element_Fire">
+    <a-named-image-target name="20_Element_Fire" alvo-persistente>
       <a-box
+        id="cubo"
         position="0 0.15 0"
         scale="0.25 0.25 0.25"
         material="color: #ff6600; opacity: 0.95;"
+        visible="false"
         animation="property: rotation; to: 0 360 0; dur: 2000; loop: true; easing: linear">
       </a-box>
     </a-named-image-target>
