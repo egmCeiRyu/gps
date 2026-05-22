@@ -16,7 +16,9 @@ AFRAME.registerComponent('alvo-persistente', {
   }
 });
 
+// ATUALIZE AS ÚLTIMAS LINHAS DO SEU BUNDLE.JS
 const onxrloaded = () => {
+  // 1. Passamos os dados da imagem (A placa de madeira)
   XR8.XrController.configure({
     imageTargetData: [
       {
@@ -26,6 +28,11 @@ const onxrloaded = () => {
       }
     ]
   });
-  console.log("🚀 Alvo oficial toggle-slam injetado!");
+
+  // 🔥 O QUE FALTAVA: Comando obrigatório para ligar o scanner de imagem da câmera!
+  XR8.XrController.configure({imageTargets: ['toggle-slam']});
+
+  console.log("🎯 MOTOR DE IMAGEM LIGADO E ATIVADO!");
 }
+
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
