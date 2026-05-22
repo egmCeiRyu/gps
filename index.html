@@ -3,41 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>8th Wall - Teste Apenas Cubo (SLAM)</title>
+  <title>8th Wall - Diagnóstico de Erro</title>
 
   <script src="./external/scripts/8frame-1.5.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
   
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam,image"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
     div[data-8thwall-branding], .xrextras-branding { display: none !important; }
+    
+    /* 🚨 TEXTO DE ERRO NA TELA DO CELULAR */
+    #status-tracker {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 0, 0, 0.8);
+      color: white;
+      padding: 15px 25px;
+      font-family: sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      z-index: 9999;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
+
+  <div id="status-tracker">❌ CÂMERA CEGA: Image Target NÃO lido ainda!</div>
 
   <a-scene
     landing-page
     xrextras-loading
     xrextras-runtime-error
     renderer="colorManagement: true; antialias: true"
-    xrweb>
+    xrweb="local-tracking: true; imageTargetFolder: image/image-targets;">
 
     <a-camera id="camera" position="0 1.6 0"></a-camera>
 
-    <a-box 
-      id="targetModel"
-      position="0 0 -1.5" 
-      material="color: red; opacity: 0.9;" 
-      scale="0.3 0.3 0.3"
-      visible="true">
-    </a-box>
+    <a-named-image-target name="20_Element_Fire" alvo-persistente>
+       <a-box 
+         id="targetModel"
+         position="0 0.1 0" 
+         material="color: lime; opacity: 0.9;" scale="0.2 0.2 0.2"
+         visible="false">
+       </a-box>
+    </a-named-image-target>
 
   </a-scene>
 
   <script src="bundle.js"></script>
+
+  <script>
+    window.addEventListener('xrloaded', () => {
+      const target = document.querySelector('a-named-image-target');
+      const statusDiv = document.getElementById('status-tracker');
+
+      // Escuta se o 8th wall conseguiu disparar o evento de encontrar a imagem
+      target.addEventListener('xrimagefound', () => {
+        statusDiv.style.background = "green";
+        statusDiv.innerHTML = "🎯 SUCESSO: Imagem Encontrada!";
+      });
+      
+      // Monitora se o motor dar erro interno ao tentar baixar os arquivos do GitHub
+      window.addEventListener('xrerror', (e) => {
+        statusDiv.innerHTML = "🚨 ERRO CRÍTICO NO MOTOR: " + e.detail.message;
+      });
+    });
+  </script>
 
 </body>
 </html>
