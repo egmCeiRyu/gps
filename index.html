@@ -19,21 +19,16 @@
 </head>
 <body>
 
-  <a-scene 
+  <a-scene
     landing-page
     xrextras-loading
     xrextras-runtime-error
     renderer="colorManagement: true; antialias: true"
-    xrweb="local-tracking: true;">
-    
-    <a-assets>
-      <a-asset-item id="modelo" src="./public/assets/modelo.glb"></a-asset-item>
-    </a-assets>
+    xrweb="local-tracking: true; imageTargetFolder: image/image-targets;">
 
-    <a-camera position="0 1.6 0"></a-camera>
+    <a-camera id="camera" position="0 1.6 0"></a-camera>
 
     <a-named-image-target name="seu-panfleto" alvo-persistente>
-      
       <a-entity 
         id="targetModel"
         gltf-model="#cactusModel" 
@@ -41,7 +36,6 @@
         position="0 0 0"
         visible="false">
       </a-entity>
-
     </a-named-image-target>
 
   </a-scene>

@@ -17,17 +17,19 @@ AFRAME.registerComponent('alvo-persistente', {
 });
 
 const onxrloaded = () => {
+  // Configuração explícita injetando a localização correta detetada na estrutura
   XR8.XrController.configure({
     imageTargetData: [
       {
         name: 'seu-panfleto',
-        // Injetamos a pasta 'image/' que estava faltando no caminho!
+        // Caminho exato com base na pasta "image" que está dentro de "gps"
         imagePath: 'image/image-targets/seu-panfleto_original.jpg',
         metadata: 'image/image-targets/seu-panfleto.json'
       }
     ]
   })
-  console.log("🎯 Caminho corrigido com sucesso!");
+  console.log("🎯 Alvo configurado com o caminho: image/image-targets/");
 }
 
+// Inicializa o motor assim que estiver pronto
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
