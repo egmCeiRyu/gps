@@ -1,33 +1,22 @@
+// bundle.js — componente A-Frame para controle do image target
+ 
 AFRAME.registerComponent('alvo-persistente', {
   init: function () {
-    const el = this.el; 
-    // CORREÇÃO: Busca o cubo de teste ou qualquer modelo que estiver dentro do target
-    const modelo3d = el.querySelector('#targetModel') || el.querySelector('a-entity'); 
-
+    const el = this.el;
+    const modelo = el.querySelector('#targetModel');
+ 
     el.addEventListener('xrimagefound', () => {
-      console.log("🔥 Imagem encontrada!");
-      if (modelo3d) modelo3d.setAttribute('visible', 'true');
+      console.log('🔥 Imagem encontrada!');
+      if (modelo) modelo.setAttribute('visible', 'true');
     });
-
+ 
     el.addEventListener('xrimagelost', () => {
-      console.log("Imagem perdida do sensor.");
+      console.log('👁️ Imagem perdida — mantendo visível');
+      // Comentado de propósito: objeto permanece mesmo após perder o tracking
+      // if (modelo) modelo.setAttribute('visible', 'false');
     });
   }
 });
-
-const onxrloaded = () => {
-  XR8.XrController.configure({
-    imageTargetData: [
-      {
-        name: '20_Element_Fire',
-        imagePath: './20_Element_Fire_original.png', 
-        metadata: './20_Element_Fire.json'          
-      }
-    ]
-  });
-
-  XR8.XrController.configure({imageTargets: ['20_Element_Fire']});
-  console.log("🎯 Scanner ativado para arquivos da raiz!");
-}
-
-window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
+ 
+// NÃO configure o XR8 aqui — já está no index.html
+// Manter bundle.js apenas com componentes A-Frame
