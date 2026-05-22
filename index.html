@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>8th Wall - Image Target Estático</title>
+  <title>8th Wall - Teste Apenas Cubo (SLAM)</title>
 
   <script src="./external/scripts/8frame-1.5.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
   
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam,image"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
@@ -23,21 +23,17 @@
     xrextras-loading
     xrextras-runtime-error
     renderer="colorManagement: true; antialias: true"
-    xrweb="local-tracking: true; imageTargetFolder: image/image-targets;">
+    xrweb>
 
     <a-camera id="camera" position="0 1.6 0"></a-camera>
 
-    <a-named-image-target name="20_Element_Fire" alvo-persistente>
-       
-       <a-box 
-         id="targetModel"
-         position="0 0.1 0" 
-         material="color: red; opacity: 0.9;" 
-         scale="0.2 0.2 0.2"
-         visible="false">
-       </a-box>
-
-    </a-named-image-target>
+    <a-box 
+      id="targetModel"
+      position="0 0 -1.5" 
+      material="color: red; opacity: 0.9;" 
+      scale="0.3 0.3 0.3"
+      visible="true">
+    </a-box>
 
   </a-scene>
 
