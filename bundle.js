@@ -21,15 +21,14 @@ const onxrloaded = () => {
     imageTargetData: [
       {
         name: '20_Element_Fire',
-        // Usamos "./" no começo para forçar o navegador a buscar a partir da pasta atual do site
-        imagePath: './image/image-targets/20_Element_Fire_original.png', 
-        metadata: './image/image-targets/20_Element_Fire.json'
+        imagePath: './20_Element_Fire_original.png', // Direto na raiz!
+        metadata: './20_Element_Fire.json'          // Direto na raiz!
       }
     ]
   });
 
   XR8.XrController.configure({imageTargets: ['20_Element_Fire']});
-  console.log("🎯 Scanner configurado com caminhos relativos!");
+  console.log("🎯 Scanner configurado com arquivos direto na raiz!");
 }
 
 window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
