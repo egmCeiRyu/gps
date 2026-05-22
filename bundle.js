@@ -1,9 +1,10 @@
-// bundle.js — configure ANTES de iniciar o engine
+// bundle.js — Ajustado para buscar tudo na raiz sem dar nó!
 
 window.addEventListener('xrloaded', () => {
   console.log('✅ XR8 carregado')
 
-  fetch('./image-targets/20_Element_Fire.json')
+  // Buscando o arquivo corrigido direto na raiz
+  fetch('./20_Element_Fire.json')
     .then(r => {
       if (!r.ok) throw new Error('JSON não encontrado (' + r.status + ')')
       return r.json()
@@ -11,21 +12,24 @@ window.addEventListener('xrloaded', () => {
     .then(targetJson => {
       console.log('📄 JSON ok:', targetJson.name)
 
-      // 1. Configure PRIMEIRO — antes de qualquer coisa
+      // 1. Configura a engine com os metadados do alvo
       XR8.XrController.configure({
         imageTargetData: [targetJson],
       })
+
+      // 🔥 CORREÇÃO OBRIGATÓRIA: Liga o scanner em tempo real para processar este alvo!
+      XR8.XrController.configure({imageTargets: ['20_Element_Fire']})
       console.log('🎯 Configure ok!')
 
-      // 2. Agora inicia o engine com xrweb
+      // 2. Inicia os módulos visuais do engine
       XR8.addCameraPipelineModule(XRExtras.Loading.pipelineModule())
       XR8.addCameraPipelineModule(XRExtras.RuntimeError.pipelineModule())
 
-      // 3. Inicia a cena A-Frame
+      // 3. Ativa o motor xrweb na cena do A-Frame
       const scene = document.querySelector('a-scene')
-      scene.setAttribute('xrweb', '')
+      scene.setAttribute('xrweb', 'local-tracking: true;')
 
-      // 4. Eventos
+      // 4. Mapeamento dos Eventos
       const status = document.getElementById('status')
       const target = document.querySelector('a-named-image-target')
 
