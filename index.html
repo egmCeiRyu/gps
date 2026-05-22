@@ -2,18 +2,18 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Image Target + SLAM Persistente</title>
-  
-  <script crossorigin="anonymous" src="./external/scripts/8frame-1.5.0.min.js"></script>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>8th Wall - Image Target + SLAM Persistente</title>
+
+  <script src="./external/scripts/8frame-1.5.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" crossorigin="anonymous" async data-preload-chunks="slam,image"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
-    /* Oculta as marcas d'água igual no seu código */
+    /* Remove as marcas d'água comerciais para o projeto ficar limpo */
     div[data-8thwall-branding], .xrextras-branding { display: none !important; }
   </style>
 </head>
@@ -26,22 +26,60 @@
     renderer="colorManagement: true; antialias: true"
     xrweb="local-tracking: true; imageTargetFolder: image/image-targets;">
 
+    <a-assets>
+      <a-asset-item id="modelo" src="./public/assets/modelo.glb"></a-asset-item>
+    </a-assets>
+
     <a-camera id="camera" position="0 1.6 0"></a-camera>
 
     <a-named-image-target name="seu-panfleto" alvo-persistente>
-      
-      <a-gltf-model 
-        src="https://cdn.aframe.io/gltf-models/duck/Duck.gltf"
-        scale="0.1 0.1 0.1" 
-        position="0 0 0"
-        rotation="0 0 0">
-      </a-gltf-model>
+       
+       <a-entity 
+         id="targetModel"
+         gltf-model="#modelo" 
+         scale="1 1 1" 
+         position="0 0 0"
+         visible="false">
+       </a-entity>
 
     </a-named-image-target>
 
   </a-scene>
 
-  <script src="./bundle.js"></script>
+  <script>
+    // 1. Seu componente de Persistência (Idêntico ao seu)
+    AFRAME.registerComponent('alvo-persistente', {
+      init: function () {
+        const el = this.el; 
+        const modelo3d = el.querySelector('a-entity'); 
+
+        el.addEventListener('xrimagefound', () => {
+          console.log("🎯 Imagem encontrada pelo motor oficial!");
+          modelo3d.setAttribute('visible', 'true');
+        });
+
+        el.addEventListener('xrimagelost', () => {
+          console.log("📍 Imagem perdida. SLAM mantendo o modelo fixo no espaço.");
+        });
+      }
+    });
+
+    // 2. Configuração do Controlador de Imagens da Niantic
+    const onxrloaded = () => {
+      XR8.XrController.configure({
+        imageTargetData: [
+          {
+            name: 'seu-panfleto',
+            imagePath: 'image/image-targets/seu-panfleto_original.jpg',
+            metadata: 'image/image-targets/seu-panfleto.json'
+          }
+        ]
+      });
+      console.log("🚀 Banco de dados do Image Target sincronizado com o Kanji quadrado!");
+    }
+
+    window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
+  </script>
 
 </body>
 </html>
