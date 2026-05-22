@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>AR - Element Fire</title>
+  <title>AR - Element Fire (Corrigido)</title>
 
   <script src="./external/scripts/8frame-1.5.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
   
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam,image"></script>
+  <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async="true" data-preload-chunks="slam,image"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,30 +32,29 @@
 </head>
 <body>
 
-  <div id="status">⏳ Carregando...</div>
+  <div id="status">🔍 Aponte para a imagem...</div>
 
   <a-scene
     xrextras-loading
     xrextras-runtime-error
     renderer="colorManagement: true; antialias: true"
-    xrweb="local-tracking: true;">
+    xrweb="local-tracking: true; imageTargetFolder: ./;">
 
     <a-camera position="0 1.6 0"></a-camera>
 
-    <a-named-image-target name="20_Element_Fire">
+    <a-named-image-target name="20_Element_Fire" alvo-persistente>
       <a-box
         id="cubo"
-        position="0 0.15 0"
-        scale="0.25 0.25 0.25"
-        material="color: #ff6600; opacity: 0.95;"
-        visible="false"
-        animation="property: rotation; to: 0 360 0; dur: 2000; loop: true; easing: linear">
+        position="0 0.2 0"
+        scale="0.3 0.3 0.3"
+        material="color: #00AAFF;"
+        visible="false">
       </a-box>
     </a-named-image-target>
 
   </a-scene>
 
-  <script src="./bundle.js"></script>
+  <script src="bundle.js"></script>
 
 </body>
 </html>

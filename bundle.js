@@ -1,81 +1,60 @@
-// bundle.js — Versão com sintaxe 100% corrigida e sem chaves sobrando!
+// bundle.js — Versão Alinhada com o Pipeline oficial do 8th Wall
 
-window.addEventListener('xrloaded', () => {
-  console.log('✅ XR8 Open Source pronto.');
+AFRAME.registerComponent('alvo-persistente', {
+  init: function () {
+    const el = this.el;
+    const cubo = el.querySelector('#cubo');
 
-  // 1. Módulo de pipeline para interceptar os eventos da imagem
-  const moduloImagemPipeline = () => {
-    return {
-      name: 'meu-rastreador-fogo',
-      listeners: [
-        {
-          event: 'reality.imagefound',
-          process: (event) => {
-            if (event.detail.name === '20_Element_Fire') {
-              console.log('🎯 Carta de Fogo Encontrada!');
-              
-              const status = document.getElementById('status');
-              if (status) {
-                status.textContent = '🎯 Imagem encontrada!';
-                status.className = 'found';
-              }
-
-              const cubo = document.getElementById('cubo');
-              if (cubo) {
-                cubo.setAttribute('visible', 'true');
-              }
-            }
-          }
-        },
-        {
-          event: 'reality.imagelost',
-          process: (event) => {
-            if (event.detail.name === '20_Element_Fire') {
-              console.log('🔍 Imagem Perdida');
-              
-              const status = document.getElementById('status');
-              if (status) {
-                status.textContent = '🔍 Aponte para a imagem do fogo...';
-                status.className = '';
-              }
-            }
-          }
-        }
-      ]
-    };
-  };
-
-  const inicializarAR = (targetJson) => {
-    if (!XR8.XrController) {
-      setTimeout(() => inicializarAR(targetJson), 100);
-      return;
-    }
-
-    console.log('⚙️ Configurando Alvo...');
-
-    // 2. Configura o leitor com a imagem de luminância da raiz
-    XR8.XrController.configure({
-      imageTargetData: [
-        {
-          name: targetJson.name,
-          imagePath: './' + targetJson.imagePath, 
-          metadata: targetJson
-        }
-      ]
+    // Escuta quando o motor encontra a foto
+    el.addEventListener('xrimagefound', () => {
+      console.log('🎯 Imagem Encontrada!');
+      
+      const status = document.getElementById('status');
+      if (status) {
+        status.textContent = '🎯 Imagem encontrada!';
+        status.className = 'found';
+      }
+      
+      if (cubo) cubo.setAttribute('visible', 'true');
     });
 
-    // 3. Ativa o scanner
-    XR8.XrController.configure({ imageTargets: [targetJson.name] });
+    // Escuta quando a imagem sai da câmera
+    el.addEventListener('xrimagelost', () => {
+      console.log('🔍 Imagem perdida.');
+      const status = document.getElementById('status');
+      if (status) {
+        status.textContent = '🔍 Aponte para a imagem...';
+        status.className = '';
+      }
+    });
+  }
+});
 
-    // 4. Injeta os módulos na câmera
-    XR8.addCameraPipelineModule(moduloImagemPipeline());
-    XR8.addCameraPipelineModule(XRExtras.Loading.pipelineModule());
-    XR8.addCameraPipelineModule(XRExtras.RuntimeError.pipelineModule());
+const inicializarAR = (targetJson) => {
+  if (!XR8.XrController) {
+    setTimeout(() => inicializarAR(targetJson), 100);
+    return;
+  }
 
-    console.log('🚀 Sistema pronto!');
-  };
+  // Passa as configurações da raiz para o leitor interno
+  XR8.XrController.configure({
+    imageTargetData: [
+      {
+        name: targetJson.name,
+        imagePath: './' + targetJson.imagePath, 
+        metadata: targetJson
+      }
+    ]
+  });
 
-  // 5. Executa o download do JSON na raiz
+  // Força o scanner a ligar procurando o nome do alvo
+  XR8.XrController.configure({ imageTargets: [targetJson.name] });
+  console.log('🎯 Scanner ativado para:', targetJson.name);
+};
+
+window.addEventListener('xrloaded', () => {
+  console.log('✅ XR8 Carregado');
+
   fetch('./20_Element_Fire.json')
     .then(r => {
       if (!r.ok) throw new Error('JSON não encontrado (' + r.status + ')');
@@ -87,9 +66,6 @@ window.addEventListener('xrloaded', () => {
     .catch(err => {
       console.error('🚨', err);
       const s = document.getElementById('status');
-      if (s) {
-        s.textContent = '🚨 ' + err.message;
-        s.className = 'error';
-      }
+      if (s) s.textContent = '🚨 ' + err.message;
     });
-}); // CHAVE E PARÊNTESIS FECHADOS CORRETAMENTE AQUI!
+});
