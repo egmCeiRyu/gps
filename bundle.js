@@ -1,33 +1,38 @@
-// bundle.js — Ajustado para garantir que o XrController não venha null!
+// bundle.js — Versão Definitiva anti-tarja preta!
 
 const inicializarAR = (targetJson) => {
-  // Verificação de segurança: se o controlador ainda não subiu, espera 100ms e tenta de novo
   if (!XR8.XrController) {
-    console.log('⏳ Aguardando XrController inicializar...');
+    console.log('⏳ Aguardando XrController...');
     setTimeout(() => inicializarAR(targetJson), 100);
     return;
   }
 
   console.log('🎯 XrController pronto! Configurando alvo:', targetJson.name);
 
-  // 1. Configura a engine com os metadados do alvo que veio da raiz
+  // 🔥 A CORREÇÃO DE SINTAXE: Formatando os dados exatamente como o 8th Wall exige
   XR8.XrController.configure({
-    imageTargetData: [targetJson],
+    imageTargetData: [
+      {
+        name: targetJson.name,
+        imagePath: './' + targetJson.imagePath, // Aponta para a imagem de luminância na raiz
+        metadata: targetJson
+      }
+    ]
   });
 
-  // 2. Liga o scanner em tempo real para processar este alvo específico
-  XR8.XrController.configure({ imageTargets: ['20_Element_Fire'] });
-  console.log('🎯 Configure ok!');
+  // Força o scanner a ligar procurando o nome exato do alvo
+  XR8.XrController.configure({ imageTargets: [targetJson.name] });
+  console.log('🎯 Scanner ativado com sucesso para:', targetJson.name);
 
-  // 3. Inicia os módulos de interface visuais
+  // Inicia os módulos de interface
   XR8.addCameraPipelineModule(XRExtras.Loading.pipelineModule());
   XR8.addCameraPipelineModule(XRExtras.RuntimeError.pipelineModule());
 
-  // 4. Ativa o motor xrweb na cena do A-Frame
+  // Liga a câmera na cena A-Frame
   const scene = document.querySelector('a-scene');
   scene.setAttribute('xrweb', 'local-tracking: true;');
 
-  // 5. Mapeamento dos Eventos na Tela
+  // Captura de eventos na tela
   const status = document.getElementById('status');
   const target = document.querySelector('a-named-image-target');
 
@@ -44,8 +49,6 @@ const inicializarAR = (targetJson) => {
       status.textContent = '🔍 Aponte para a imagem do fogo...';
       status.className = '';
     });
-  } else {
-    console.error('🚨 Erro: Tag <a-named-image-target> não encontrada no HTML!');
   }
 };
 
@@ -60,7 +63,6 @@ window.addEventListener('xrloaded', () => {
     })
     .then(targetJson => {
       console.log('📄 JSON baixado com sucesso!');
-      // Chama a função de inicialização passando o JSON
       inicializarAR(targetJson);
     })
     .catch(err => {
@@ -71,13 +73,4 @@ window.addEventListener('xrloaded', () => {
         s.className = 'error';
       }
     });
-});
-
-window.addEventListener('xrerror', (e) => {
-  console.error('🚨 XR Error:', e.detail);
-  const s = document.getElementById('status');
-  if (s) {
-    s.textContent = '🚨 ' + (e.detail?.message || 'erro desconhecido');
-    s.className = 'error';
-  }
 });
