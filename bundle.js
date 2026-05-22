@@ -1,29 +1,29 @@
-// bundle.js — Versão Alinhada com o Pipeline oficial do 8th Wall
+// bundle.js — Controle de eventos e injeção de alvos na raiz
 
 AFRAME.registerComponent('alvo-persistente', {
   init: function () {
     const el = this.el;
     const cubo = el.querySelector('#cubo');
 
-    // Escuta quando o motor encontra a foto
+    // Quando o olho do sensor reconhecer a imagem
     el.addEventListener('xrimagefound', () => {
-      console.log('🎯 Imagem Encontrada!');
+      console.log('油 Encontrou a imagem do fogo!');
       
       const status = document.getElementById('status');
       if (status) {
-        status.textContent = '🎯 Imagem encontrada!';
+        status.textContent = '油 Imagem encontrada!';
         status.className = 'found';
       }
       
       if (cubo) cubo.setAttribute('visible', 'true');
     });
 
-    // Escuta quando a imagem sai da câmera
+    // Quando perder a imagem de vista
     el.addEventListener('xrimagelost', () => {
       console.log('🔍 Imagem perdida.');
       const status = document.getElementById('status');
       if (status) {
-        status.textContent = '🔍 Aponte para a imagem...';
+        status.textContent = '🔍 Aponte para a imagem do fogo...';
         status.className = '';
       }
     });
@@ -36,24 +36,27 @@ const inicializarAR = (targetJson) => {
     return;
   }
 
-  // Passa as configurações da raiz para o leitor interno
+  console.log('⚙️ Injetando metadados do alvo...');
+
+  // Configura a engine com os dados que vieram do fetch do JSON
   XR8.XrController.configure({
     imageTargetData: [
       {
         name: targetJson.name,
-        imagePath: './' + targetJson.imagePath, 
+        imagePath: './' + targetJson.imagePath, // Vai buscar em image-targets/20_Element_Fire_luminance.png
         metadata: targetJson
       }
     ]
   });
 
-  // Força o scanner a ligar procurando o nome do alvo
+  // Força a ativação do scanner para o ID do fogo
   XR8.XrController.configure({ imageTargets: [targetJson.name] });
-  console.log('🎯 Scanner ativado para:', targetJson.name);
+  console.log('🎯 Scanner 8th Wall ativado com sucesso!');
 };
 
+// Escuta o sinal do runtime.js local para iniciar o processo
 window.addEventListener('xrloaded', () => {
-  console.log('✅ XR8 Carregado');
+  console.log('✅ Motor XR8 detectado. Buscando JSON da raiz...');
 
   fetch('./20_Element_Fire.json')
     .then(r => {
@@ -64,8 +67,10 @@ window.addEventListener('xrloaded', () => {
       inicializarAR(targetJson);
     })
     .catch(err => {
-      console.error('🚨', err);
+      console.error('🚨 Erro de inicialização:', err);
       const s = document.getElementById('status');
-      if (s) s.textContent = '🚨 ' + err.message;
+      if (s) {
+        s.textContent = '🚨 ' + err.message;
+      }
     });
 });

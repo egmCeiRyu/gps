@@ -9,15 +9,15 @@
     "originalWidth": 750,
     "originalHeight": 1050
   },
-  "imagePath": "20_Element_Fire_luminance.png",
+  "imagePath": "image-targets/20_Element_Fire_luminance.png",
   "metadata": null,
   "name": "20_Element_Fire",
   "resources": {
-    "originalImage": "20_Element_Fire_original.png",
-    "croppedImage": "20_Element_Fire_cropped.png",
-    "thumbnailImage": "20_Element_Fire_thumbnail.png",
-    "geometryImage": "20_Element_Fire_geometry.png",
-    "luminanceImage": "20_Element_Fire_luminance.png"
+    "originalImage": "image-targets/20_Element_Fire_original.png",
+    "croppedImage": "image-targets/20_Element_Fire_cropped.png",
+    "thumbnailImage": "image-targets/20_Element_Fire_thumbnail.png",
+    "geometryImage": "image-targets/20_Element_Fire_geometry.png",
+    "luminanceImage": "image-targets/20_Element_Fire_luminance.png"
   },
   "userMetadataIsJson": true,
   "loadAutomatically": true,

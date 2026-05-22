@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>AR - Element Fire (Corrigido)</title>
+  <title>AR - Element Fire</title>
 
-  <script src="./external/scripts/8frame-1.5.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/xrextras@1/dist/xrextras.js" crossorigin="anonymous"></script>
+  <script crossorigin="anonymous" src="./external/runtime/runtime.js"></script>
   
-  <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async="true" data-preload-chunks="slam,image"></script>
+  <script crossorigin="anonymous" src="./external/xr/xr.js" async="true" data-preload-chunks="image, slam"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,11 +31,9 @@
 </head>
 <body>
 
-  <div id="status">🔍 Aponte para a imagem...</div>
+  <div id="status">🔍 Aponte para a imagem do fogo...</div>
 
   <a-scene
-    xrextras-loading
-    xrextras-runtime-error
     renderer="colorManagement: true; antialias: true"
     xrweb="local-tracking: true; imageTargetFolder: ./;">
 
@@ -47,8 +44,9 @@
         id="cubo"
         position="0 0.2 0"
         scale="0.3 0.3 0.3"
-        material="color: #00AAFF;"
-        visible="false">
+        material="color: #ff6600; opacity: 0.95;"
+        visible="false"
+        animation="property: rotation; to: 0 360 0; dur: 2000; loop: true; easing: linear">
       </a-box>
     </a-named-image-target>
 
